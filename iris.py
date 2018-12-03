@@ -60,7 +60,8 @@ def nearest(vector,vectorlst):
 
 
 #The function below defines the iterative step in Lloyd's algorithm: we take our dataframe representing the current data classification 
-#('df') and a current list of cluster means ('vectorlst') and use our 'nearest' function to reclassify the points (each dataframe in #'dataframes' corresponds to a cluster) and calculate a list of new cluster means ('new_vectorlst'). 
+#('df') and a current list of cluster means ('vectorlst') and use our 'nearest' function to reclassify the points (each dataframe in 
+#'dataframes' corresponds to a cluster) and calculate a list of new cluster means ('new_vectorlst'). 
 
 def label(df,vectorlst):
 	if np.shape(df)[1] > 2:
