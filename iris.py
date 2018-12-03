@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-#Import and process data
+#Import and process data.
 
 data = urlopen('https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data')
 data = data.readlines()
@@ -19,9 +19,12 @@ iris_classes = list(set(df['Iris Class']))
 
 
 #Select two variables for comparison.
+
 def variable_select(variable1,variable2):
 	return df.iloc[:,[variable1,variable2,4]]
+
 #Plot two variables for comparison. Points are coloured according to 'Iris Class'.  
+
 def scatter_plot(variable1,variable2):
 	df = variable_select(variable1,variable2)
 	for i in range(0,3):
@@ -42,7 +45,8 @@ def scatter_plot(variable1,variable2):
 
 #Lloyd's Algorithm:
 
-#The Lloyd's Algorithm works by iteratively classifying points according to which cluster mean is closest (here, we use the 2-norm). In the function below, 'vector' refers to the point we wish to classify and 'vectorlst' refers to a list of cluster means. 
+#The Lloyd's Algorithm works by iteratively classifying points according to which cluster mean is closest (here, we use the 2-norm). 
+#In the function below, 'vector' refers to the point we wish to classify and 'vectorlst' refers to a list of cluster means. 
 
 def nearest(vector,vectorlst):
 	distance = np.linalg.norm(vector - vectorlst[0],2)
@@ -55,7 +59,8 @@ def nearest(vector,vectorlst):
 	return label 
 
 
-# The function below defines the iterative step in Lloyd's algorithm: we take our dataframe representing the current data classification ('df') and a current list of cluster means ('vectorlst') and use our 'nearest' function to reclassify the points (each dataframe in 'dataframes' corresponds to a cluster) and calculate a list of new cluster means ('new_vectorlst'). 
+#The function below defines the iterative step in Lloyd's algorithm: we take our dataframe representing the current data classification 
+#('df') and a current list of cluster means ('vectorlst') and use our 'nearest' function to reclassify the points (each dataframe in #'dataframes' corresponds to a cluster) and calculate a list of new cluster means ('new_vectorlst'). 
 
 def label(df,vectorlst):
 	if np.shape(df)[1] > 2:
@@ -78,7 +83,10 @@ def label(df,vectorlst):
 	return new_vectorlst, dataframes 
 
 
-#For the purposes of visualising the algorithm, we want to plot the decision boundary between clusters at each iteration. The 'nearest neighbour' nature of the classification means that we'll end up with so-called Voronoi cells. In the fuction below, the 'vectorlst' refers to the points that generate each cell, the axes determine what rectangle of the 2-D plane is plotted i.e. xaxis = [0,1] means we'll plot in the range 0<x<1. 
+#For the purposes of visualising the algorithm, we want to plot the decision boundary between clusters at each iteration. 
+#The 'nearest neighbour' nature of the classification means that we'll end up with so-called Voronoi cells. In the fuction below, 
+#the 'vectorlst' refers to the points that generate each cell, the axes determine what rectangle of the 2-D plane is plotted i.e.
+#xaxis = [0,1] means we'll plot in the range 0<x<1. 
 
 def voronoi(vectorlst,xaxis,yaxis):
 	n = len(vectorlst)
@@ -96,7 +104,12 @@ def voronoi(vectorlst,xaxis,yaxis):
 		Z = function_lst[i] - W
 		plt.contour(X,Y,Z,[0])
 
-#Putting it all together, we create an animation to visualise each iteration in Lloyd's Algorithm. In the function below, 'df' refers to a dataframe that represents the 2-D data we wish to cluster, 'vectorlst' gives us initial cluster centres and 'time' refers to time in seconds between the frames in our animation. Points will be coloured according to which cluster they belong to at each iteration, the lines demarcate the decision boundary between clusters and the crosses mark the position of the cluster meas at each iteration. Llyod's Algorithm terminates when the cluster means don't change between iterations; we use the variable 'truth_lst' to determined when this is the case.  
+#Putting it all together, we create an animation to visualise each iteration in Lloyd's Algorithm. In the function below, 'df' 
+#refers to a dataframe that represents the 2-D data we wish to cluster, 'vectorlst' gives us initial cluster centres and 'time' 
+#refers to time in seconds between the frames in our animation. Points will be coloured according to which cluster they belong 
+#to at each iteration, the lines demarcate the decision boundary between clusters and the crosses mark the position of the 
+#cluster meas at each iteration. Llyod's Algorithm terminates when the cluster means don't change between iterations; we use the 
+#variable 'truth_lst' to determined when this is the case.  
 
 def animate(df,vectorlst,time):
 	xaxis = [np.min(df.iloc[:,0]),np.max(df.iloc[:,0])]
@@ -146,7 +159,12 @@ def animate(df,vectorlst,time):
 
 
 
-# For ease, we define the function below. We specify the indexes of the two variables to compare, as the number of clusters ('n') into which we want to divide the data and the time in seconds between the frames of the animations. The initialising cluster points for Lloyd's Algorithm are randomnly sampled from among the data points. Also, after closing the final frame in our animation, we are shown the same scatter graph but with the points instead coloured according to the 'Iris Class'. Since their are three iris classes, we would hope that for n=3, this scatter graph would resemble the final frame i.e. LLoyd's algorithm has successfully clustered the data into known categories. 
+#For ease, we define the function below. We specify the indexes of the two variables to compare, as the number of clusters ('n')
+#into which we want to divide the data and the time in seconds between the frames of the animations. The initialising cluster 
+#points for Lloyd's Algorithm are randomnly sampled from among the data points. Also, after closing the final frame in our 
+#animation, we are shown the same scatter graph but with the points instead coloured according to the 'Iris Class'. Since their
+#are three iris classes, we would hope that for n=3, this scatter graph would resemble the final frame i.e. LLoyd's algorithm has
+#successfully clustered the data into known categories. 
 
 def reanimate(variable_index_1, variable_index_2, n, time):
 	df = variable_select(variable_index_1,variable_index_2)
@@ -156,8 +174,13 @@ def reanimate(variable_index_1, variable_index_2, n, time):
 	animate(df,vectorlst,time)
 	scatter_plot(variable_index_1,variable_index_2)
 	
-# Example animation: 
+#Example animation: 
 reanimate(1,3,3,1)
+
+
+
+
+
 
 
 
