@@ -1,3 +1,8 @@
+# We'll hierarchically cluster our animal data (101 animals with a vector of 15 attributes) to generate a taxonomic tree.
+# We'll implement greedy algorithm that, at each step, pairs the "closest" subtrees/leaves. As a measure 
+# of distance between two subtrees, the mean of each subtree is taken (the mean of the elements in a subtree) and the 2-norm 
+# distance between these means is calculated. Trees will be first represented as embedded lists and then graphically. 
+
 import urllib.request
 from urllib.request import urlopen
 import pandas as pd
@@ -21,12 +26,7 @@ for i in range(0,len(data)):
 df = pd.DataFrame(data = animal_vectors, index = animal_names, columns = attributes)
 df.iloc[:,0:16] = df.iloc[:,0:16].apply(pd.to_numeric)
 
-#We'll trying to hierarchically cluster our animal data (101 animals with a vector of 15 attirbutes) to come up with a taxonomy.
-#We'll generate a tree by implementing a greedy algorithm that, at each step, pairs the "closest" subtrees/leaves. As a measure 
-#of distance between two subtrees, the mean of each subtree is taken (the mean of the elements in a subtree) and the 2-norm 
-#distance between these means is calculated. Trees will be first represented as embedded lists and then graphically. 
-
-#Following the above outline, we create a function to pair the "closest" elements in a lst. A list is inputted and the indices 
+#Following the above outline, we create a function to pair the "closest" elements in a list ("lst"). A list is inputted and the indices 
 #('index1' and 'index2') of the "closest" elements are outputted, along with their 2-norm difference ('diff').
 
 def min_diff(lst):
@@ -43,9 +43,9 @@ def min_diff(lst):
 				index2 = j
 	return diff, index1, index2
 
-# Next, we need to find a way to access all the elements (animal vectors) in a subtree. The following function takes an embedded 
-#list (tree) and returns a list of all elements e.g. defoliant1([[a,b],[[b],[c,d,e]]]) = [a,b,b,c,d,e]. The function 'defoliant' 
-#extends this process to included leaves i.e. defoliant(a) = [a]. 
+# Next, we need to find a way to access all the elements in a subtree. The following function takes an embedded 
+# list (representing a tree) and returns a list of all its elements e.g. defoliant1([[a,b],[[b],[c,d,e]]]) = [a,b,b,c,d,e]. 
+# The function 'defoliant' extends this process to includedleaves i.e. defoliant(a) = [a]. 
  
 def defoliant1(lstlst):
 	truth_list = [type(x)==np.ndarray for x in lstlst]
@@ -68,9 +68,9 @@ def defoliant(lstlst):
 	return lstlst
 
 
-#Next we define the greedy iterative step to make our tree (embedded list). We input an embedded list of attribute vectors and a 
-#corresponding embedded list of animal names (representing the current tree). Two new embedded lists are outputted, representing 
-#the tree after that results from pairing the "closest" subtrees.  
+# Next, we define the iterative step to make our tree (embedded list). We input an embedded list of attribute vectors and a 
+# corresponding embedded list of animal names (representing the current tree). Two new embedded lists are outputted, representing 
+# the tree that results from pairing the "closest" subtrees.  
 
 def pair(lstlst,lstlstnam):
 	lst = [np.mean(defoliant(x),axis=0) for x in lstlst]
@@ -104,9 +104,9 @@ def print_tree(lst_vectors,lst_names):
 	x = x.replace(']',')')
 	print(Tree(str(x)+";"))
 
-#To facilitate retrieving the necessary data from our dataframe, we define the the function below. We input a numerical list of 
-#all the animals we want to include in our taxonomy e.g. quick_print([0,2]) would include the first and second animal ('aardvark' 
-#and 'bass'), quick_print(range(0,101)) would include all our animals. 
+# To facilitate retrieving the necessary data from our dataframe, we define the the function below. We input a numerical list indexing 
+# all the animals we want to include in our taxonomy e.g. quick_print([0,2]) would include the first and second animal ('aardvark' 
+# and 'bass'), quick_print(range(0,101)) would include all our animals. 
 
 def quick_print(lst):
 	print_tree(list(df.iloc[lst,:].values),list(df.index[lst]))
