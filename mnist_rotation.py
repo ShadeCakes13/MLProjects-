@@ -1,3 +1,8 @@
+# We wish to explore rotating MNIST images. To a human, number classification is invariant under small rotations in that
+# we still call a 6 a six, even if it's written slightly wonkily (but only "slightly" - too much and it becomes a nine). So 
+# by rotating our labeled images through small angles, we can obtain new images with correct labels and so greatly expand our 
+# labeled data. 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import os
@@ -20,34 +25,24 @@ def image_plot(n):
 	plt.imshow(image_mat(n), cmap='gray_r')
 	plt.show()
     
-# We wish to explore rotating these MNIST images. To a human, number classification is invariant under small rotations in as much
-# as we still call a 6 a 6, even if it's written slightly wonkily (but only "slightly" - too much and it becomes a nine). So 
-# by rotating our labeled images through small angles, we can obtained new images with correct labels and so greatly expand our 
-# labeled data. 
 
-# Since the images have already been centred, we can rotate about the middle of each image. Rotating these images is a question
-# working out how to "square the square" or rather "square the rotated square": we take a square image aligned with some x,y axes,
-# rotate it to an image that's not necessarily aligned with these axes and from this we need to obtain an image aligned with the 
-# axes. In other words, generaly the corners of the image get shaved off when they're rotated. Here, the fact that the images are
-# centred means that we can assume the shaved corners are blank. This leads us to the following tactic: generate a blank image 
-# ((28,28) zero matrix); for each pixel in the original image, find it's location under a rotation about the centre of the image;
-# if this pixel is rotated onto a point on the blank image (i.e. if it isn't part of the shaved off corner), let the nearest pixel 
-# to this point on the blank image take the value of the original pixel. In this way we generate our rotated image matrix.
+# Since the images have already been centred, we can rotate about the middle of each image. Rotating these images presents two 
+# challenges: the first is that unless we're rotating by mutliples of pi/2, in rotating a square image onto a square image, we'll have
+# to "shave off" the corners; the second is that the MNIST images are low resolution (28x28) and again, unless we're rotating by multiples
+# of pi/2 it's unclear how to rotate a square pixel onto a square pixel. 
 
-# As discussed, we need a way to find the "location" of a pixel under rotation. In the below, we input the indices (i,j) of entry 
-# (pixel) in an nxn matrix and the angle (radians) we wish to rotate through. The output are the indices of the entry (pixel) under rotation.
-# Note: these output indices may be out of the range [0,n]x[0n] (i.e. the pixel belongs to a shaved off corner). The formula we 
-# use to make this conversion is derived using geometry and stuff. 
+# To the first problem, the fact that our images are already centred means that we can assume that the corners to be shaved off 
+# under rotation are blank. This leads us to the following tactic:  generate a blank image  ((28,28) zero matrix); for each pixel in
+# the original image, find it's location under a rotation about the centre of the image; if this pixel is rotated onto a point on the
+# blank image (i.e. if it isn't part of the shaved off corner), let the nearest pixel to this point on the blank image take the value 
+# of the original pixel. In this way we generate our rotated image matrix. We derive the following functions through geometric 
+# considerations. 
 
 def rotate_coordinates(i,j,angle,n):
 	R = np.reshape([np.cos(angle),-np.sin(angle),np.cos(angle),np.sin(angle)],(2,2))
 	a = np.reshape([1,1],(2,1))
 	b = np.reshape([j,i],(2,1))
-	return np.floor(0.5*n*a-(0.5*n-0.5)*np.matmul(R,a)+np.matmul(R,b)).astype(int)
-
-# With this function to rotate coordinates, we are ready to generate the rotated image matrix in the way outlined above. 
-# Note: to improve the code's efficiency, we would embed the above function in the below and to avoid computing the rotation
-# matrix R n**2 times (as opposed to only once); we split it up for the sake of clarity. 
+	return np.floor(0.5*n*a-(0.5*n-0.5)*np.matmul(R,a)+np.matmul(R,b)).astype(int) 
 
 def image_rotate(matrix,angle):
 	n = np.shape(matrix)[0]
@@ -70,11 +65,13 @@ def image_rotate_plot(n,angle):
     
 # We see that with our rotation function we sometime encounter a problem. For example, try "image_rotate_plot(0,0.2)". There
 # are some pixels on the image that are conspicuously blank; what's happened here is that this pixel has never quite been the "nearest"
-# to any of the pixels to be rotated and thus remains blank due to rounding. If you rotate a pixel onto a grid, it may land on several 
-# squares, but with our current method only one of the squares takes the pixels value. An intuitive way to overcome this "all-or-
-# nothing" method would be to include some kind of averaging between nearby pixels. One way of averaging pixels in an image would 
-# be through decreasing the resolution of the image. This leads to the following method: increase the image's resolution; rotate the 
-# image using our rotation function; finally decrease the rotated image's resolution to that of the original image. 
+# to any of the orignal image's pixels i.e. blankness due to rounding. Here encounter the second of our challenges. 
+
+# If you rotate a pixel onto a grid, it may land on several squares, but with our current method only one of the squares takes the 
+# pixel's value. An intuitive way to overcome this "all-or-nothing" method would be to include some kind of averaging between nearby 
+# pixels. One way of averaging pixels in an image would be through decreasing the resolution of the image. This leads to the following
+# method: increase the image's resolution; rotate the image using our rotation function; finally decrease the rotated image's resolution 
+# to that of the original image. 
 
 # Here we define a function to take an nxn matrix and return an (n*m)x(n*m) matrix, where each entry in the original matrix becomes
 # an mxm block in the corresponding position in the final matrix. This corresponds to increasing the image resolution, increasing the 
@@ -107,8 +104,8 @@ def coarse(B,m):
             summ =0
     return A
 
-# As described, we rotate our image matrix through a specified angle via increasing+decreasing the resolution of image
-# by a factor of m. 
+# As described, we rotate our image matrix through a specified angle by increasing the resolution (by a factor of m), rotating and
+# then decreasing the resolution of image. 
 
 def new_image_rotate(matrix,angle,m):
 	return coarse(image_rotate(smooth(matrix,m),angle),m)
@@ -121,7 +118,7 @@ def new_image_rotate_plot(n,angle,m):
 
 # We can quickly call four plots of an image for comparison. From left to right: the original image, the image rotated
 # through specified angle without resolution changes, the image rotated through the same angle but with a factor 2 resolution
-# change, the image rotated through the smae angle but with a factor 3 resolution change. 
+# change, the image rotated through the same angle but with a factor 3 resolution change. 
 
 def compare_image_plot(n,angle):
 	plt.close()
