@@ -1,3 +1,9 @@
+# In this project, we explore implementing Lloyd's algorithm and quantifying the "goodness" of the resulting clusters. Our data
+# consists of 101 animals with 15 attributes (stored as a vector); our programme will therefore organise the animals into groups 
+# with similar features. By the "goodness" of a clustering, we refer to 'total distance' incurred by the clusters (we take the 
+# 2-norm distance between a point and the mean of the cluster to which it's assigned, then sum these distances over all points to 
+# get our total distance).
+
 import urllib.request
 from urllib.request import urlopen
 import pandas as pd
@@ -21,15 +27,9 @@ df = pd.DataFrame(data = animal_vectors, index = animal_names, columns = attribu
 df.iloc[:,0:16] = df.iloc[:,0:16].apply(pd.to_numeric)
 
 
-#We'll be implementing Lloyd's ALgorithm to cluster our data and simultaneously we'll be calculating the 'total distance' incurred
-#by the clusters (we take the 2-norm distance between a point and the mean of the cluster to which it's assigned, then sum these
-#distances over all points to get our total distance); the total distance is what we're trying to minimise via Lloyd's. Our data
-#consists of 101 animals with 15 attributes (stored as a vector); our programme will therefore organise the animals into groups 
-#with similar features. 
-
-#First, we define a function to perform the iterative step: we take a list of the position of  cluster centres ('vectorlst'), use
-#this to cluster the data (return 'clusters'), calculate the new cluster centres ('new_vectorlst') and calculate the 
-#'total_distance' incurred by the new clusters.
+# First, we define a function to perform the iterative step: we take a list of the position of  cluster centres ('vectorlst'), use
+# this to cluster the data (return 'clusters'), calculate the new cluster centres ('new_vectorlst') and calculate the 
+# 'total_distance' incurred by the new clusters.
  
 def cluster(vectorlst):
 	n = len(vectorlst)
@@ -56,10 +56,10 @@ def cluster(vectorlst):
 	return new_vectorlst, clusters, total_distance 
 
 
-#We implement the 'kmeans' algorithm by taking a randomn sample of size n from among our points to be our initial cluster centres,
-#repeatedly perfoming the iterative step above terminating when the total distance doesn't move between iterations (a necessary 
-#and sufficient condition for the clusters not to change). The function below prints these clusters, along with a the total 
-#distance incurred by this taxonomy. 
+# We implement the Lloyd's algorithm by taking a randomn sample of size n from among our points to be our initial cluster centres,
+# repeatedly perfoming the iterative step above and terminating when the total distance doesn't move between iterations (a necessary 
+# and sufficient condition for the clusters not to change). The function below prints these clusters, along with the total 
+# distance incurred by this taxonomy. 
  
 def kmeans(n):
 	vectorlst = cluster(df.sample(n).values)
@@ -73,9 +73,8 @@ def kmeans(n):
 		print("")
 		print("Distance: " + str(new_vectorlst[2]))
 
-#For use in further functions, we use create another 'kmeans' function, except one that returns rather than prints the output. 
-#Also, in the #new kmeans functions, we specify the initial cluster centres rather than randomnly generating them. 
-   
+# For use in further functions, we use create another 'k-means' function, except one that returns rather than prints the output. 
+# Also, in the new kmeans functions, we specify the initial cluster centres rather than randomly generating them. 
 
 def kmeans_no_print(initial_vectorlst):
 	vectorlst = cluster(initial_vectorlst)
@@ -85,9 +84,9 @@ def kmeans_no_print(initial_vectorlst):
 		new_vectorlst = cluster(new_vectorlst[0])
 	return new_vectorlst
 
-#Lloyd's algorithm minimises the clustering problem locally and not, in general, globally. Initialising with different cluster
-#centres can result in different local solutions. We define a fuction that randomnly generates m lists of initialising cluster 
-#centres and calculates m local solutions to n-clustering problem; the solution with the least total distance is printed. 
+# Lloyd's algorithm minimises the clustering problem locally and not, in general, globally. Initialising with different cluster
+# centres can result in different local solutions. We define a fuction that randomnly generates m lists of initialising cluster 
+# centres and calculates m local solutions to n-clustering problem; the solution with the least total distance is printed. 
 
 def kmeans_best(n,m):
 	samples = ['x']*m
