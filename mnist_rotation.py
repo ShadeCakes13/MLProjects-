@@ -1,4 +1,4 @@
-# We wish to explore rotating MNIST images. To a human, number classification is invariant under small rotations in that
+# In this project, we explore rotating MNIST images. To a human, number classification is invariant under small rotations in that
 # we still call a 6 a six, even if it's written slightly wonkily (but only "slightly" - too much and it becomes a nine). So 
 # by rotating our labeled images through small angles, we can obtain new images with correct labels and so greatly expand our 
 # labeled data. 
