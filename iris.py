@@ -1,3 +1,7 @@
+# In this project, try to visualise Lloyd's algorithm when applied to 'Fischer's Iris Data Set'. The data consists of samples
+# of 50 plants from from three different species of Iris (Iris setosa, Iris virginica, Iris versicolor); for each plant, the 
+# sepal length, sepal width, petal length and petal width is given. 
+
 import urllib.request
 from urllib.request import urlopen
 import pandas as pd
@@ -18,12 +22,12 @@ df.columns = columns
 iris_classes = list(set(df['Iris Class']))
 
 
-#Select two variables for comparison.
+# Select two variables for comparison (e.g. petal length vs petal width) 
 
 def variable_select(variable1,variable2):
 	return df.iloc[:,[variable1,variable2,4]]
 
-#Plot two variables for comparison. Points are coloured according to 'Iris Class'.  
+# Plot two variables for comparison. Points are coloured according to 'Iris Class'.  
 
 def scatter_plot(variable1,variable2):
 	df = variable_select(variable1,variable2)
@@ -45,7 +49,7 @@ def scatter_plot(variable1,variable2):
 
 #Lloyd's Algorithm:
 
-#The Lloyd's Algorithm works by iteratively classifying points according to which cluster mean is closest (here, we use the 2-norm). 
+#The Lloyd's Algorithm works by iteratively classifying points according to the closest cluster mean (here, we use the 2-norm). 
 #In the function below, 'vector' refers to the point we wish to classify and 'vectorlst' refers to a list of cluster means. 
 
 def nearest(vector,vectorlst):
@@ -59,7 +63,7 @@ def nearest(vector,vectorlst):
 	return label 
 
 
-#The function below defines the iterative step in Lloyd's algorithm: we take our dataframe representing the current data classification 
+#The function below defines the iterative step in Lloyd's algorithm: we take the DataFrame representing the current data classification 
 #('df') and a current list of cluster means ('vectorlst') and use our 'nearest' function to reclassify the points (each dataframe in 
 #'dataframes' corresponds to a cluster) and calculate a list of new cluster means ('new_vectorlst'). 
 
@@ -109,7 +113,7 @@ def voronoi(vectorlst,xaxis,yaxis):
 #refers to a dataframe that represents the 2-D data we wish to cluster, 'vectorlst' gives us initial cluster centres and 'time' 
 #refers to time in seconds between the frames in our animation. Points will be coloured according to which cluster they belong 
 #to at each iteration, the lines demarcate the decision boundary between clusters and the crosses mark the position of the 
-#cluster meas at each iteration. Llyod's Algorithm terminates when the cluster means don't change between iterations; we use the 
+#cluster means at each iteration. Llyod's Algorithm terminates when the cluster means don't change between iterations; we use the 
 #variable 'truth_lst' to determined when this is the case.  
 
 def animate(df,vectorlst,time):
@@ -160,12 +164,12 @@ def animate(df,vectorlst,time):
 
 
 
-#For ease, we define the function below. We specify the indexes of the two variables to compare, as the number of clusters ('n')
+#For ease, we define the function below. We specify the indexes of the two variables to compare, the number of clusters ('n')
 #into which we want to divide the data and the time in seconds between the frames of the animations. The initialising cluster 
 #points for Lloyd's Algorithm are randomnly sampled from among the data points. Also, after closing the final frame in our 
-#animation, we are shown the same scatter graph but with the points instead coloured according to the 'Iris Class'. Since their
-#are three iris classes, we would hope that for n=3, this scatter graph would resemble the final frame i.e. LLoyd's algorithm has
-#successfully clustered the data into known categories. 
+#animation, we are shown the same scatter graph but with the points coloured instead according to the 'Iris Class'. Since their
+#are three Iris classes, we hope that for n=3, this scatter graph resembles the final frame i.e. LLoyd's algorithm has
+#successfully identified the known clusters in the data. 
 
 def reanimate(variable_index_1, variable_index_2, n, time):
 	df = variable_select(variable_index_1,variable_index_2)
