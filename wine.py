@@ -1,3 +1,7 @@
+# We will be building a Gaussian Generative model to determine the labels bottles of wine, examine the accuracy of our model and 
+# visualise how it classifies the data. This data consists of 178 bottles of wine, each with one of three labels and 
+# with an associated 13-D feature vector.
+
 import urllib.request
 from urllib.request import urlopen
 import numpy as np
@@ -5,7 +9,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import norm, multivariate_normal
 
-#Import and process data. This consists of 178 bottles of wine, each with one of three labels and with an associated 13-D feature vector. 
+#Import and process data. 
 data = urlopen('https://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data').readlines()
 data = [x.decode() for x in data]
 data = [x.split(',') for x in data]
@@ -13,7 +17,8 @@ featurenames = ['Label','Alcohol', 'Malic acid', 'Ash', 'Alcalinity of ash','Mag
 df = pd.DataFrame(data,columns = featurenames)
 df = df.apply(pd.to_numeric)
 
-#We will be building a Gaussian Generative Model to be able to label bottles of wine. First, we randomnly divide the data into training (130 #bottles) and test data (48 bottles).
+
+#First, we randomly divide the data into training (130 #bottles) and test data (48 bottles).
 
 perm = np.random.permutation(178)
  
@@ -23,7 +28,8 @@ trainy = df.loc[perm[0:130],'Label']
 testx = df.loc[perm[130:178],'Alcohol':'Proline']
 testy = df.loc[perm[130:178],'Label']
  
-#We now calculate some probabilities necessary for our Bayesian model, as well finding the indices for of training bottles according to their #labels. 
+# We now calculate some probabilities necessary for our Bayesian model, as well finding the indices of training bottles according 
+# to their labels. 
 
 indices = ['x']*3
 pis = ['x']*3
@@ -31,7 +37,9 @@ for i in range(1,4):
 	pis[i-1] = sum(trainy==i)/130.0
 	indices[i-1] = np.where(trainy==i)
 
-#Assuming the data follows a multivariate Gaussian distributions (one for each wine label), we construct a classifier by estimating these #distributions using our training data. In the function below, we input a list of variables to include in our model ('feat_lst') (e.g. #['Alcohol','Proline'] and the corresponding mean and covariance of the multivariate Gaussian for each label are outputted. 
+# Assuming the data follows multivariate Gaussian distributions (one for each wine label), we construct a classifier by estimating 
+# these distributions using our training data. In the function below, we input a list of variables to include in our model ('feat_lst')
+# (e.g. ['Alcohol','Proline'] and the corresponding mean and covariance of the multivariate Gaussian for each label are outputted. 
 
 def gaussians(feat_lst):
 	mu = ['x']*3
@@ -42,7 +50,9 @@ def gaussians(feat_lst):
 		c[i] = np.cov(np.vstack(data.values),rowvar=0)
 	return mu, c
 
-#We are now ready to classify bottles. In the first function, the features on which we base our classification are inputter ('feat_lst') along #with the vector to be classified. The second function classifies an entry in our test data (specified by 'index') and prints the entry's #actual label alongside our label. 
+# We are now ready to classify bottles. In the first function, the features on which we base our classification are inputted ('feat_lst')
+# along with the vector to be classified. The second function classifies an entry in our test data (specified by 'index') and prints 
+# the entry's actual label alongside our label. 
 
 def classifier(x,feat_lst):
 	value = 0
@@ -63,7 +73,8 @@ def test_classifier(index,feature_lst):
 	print("Predicted Label: " + str(predicted_label))
 
 
-#We test the success of our classification model. In the function we input the features on which we wish to base our classification, this #model is applied to label the test data and the error (as percentage) is outputted. 
+# We test the success of our classification model. In the function we input the features on which we wish to base our classification, 
+# this model is applied to label the test data and the error (as percentage) is outputted. 
  
 def test_classifier_error(feature_lst):
 	n = np.shape(testx)[0]
@@ -85,7 +96,9 @@ def test_classifier_error(feature_lst):
 	print('No. Label Errors: ' + str(error))
 	print('Error Rate (%): ' + str(error_rate))
 
-# We would suspect that the more features that are included in our classification, the lower the error rate. Below we plot the error rate #against the number of features included (going from left to right in our 'featurenames' list). First, we redefine the function above to #return the error rate rather than printing anything. 
+# We would suspect that the more features that are included in our classification, the lower the error rate. 
+# Below we plot the error rate against the number of features included (going from left to right in our 'featurenames' list).
+# First, we redefine the function above to return the error rate rather than printing anything. 
 
 def test_classifier_error1(feature_lst):
 	n = np.shape(testx)[0]
@@ -115,7 +128,8 @@ def error_plot():
 	plt.ylabel('Error Rate (%)')
 	plt.show()
 
-#To visualise the classifier, we restrict ourselves to 2-D. Based on the two features inputted, we construct plot, showing the test data as #well as the the decision boundary of our model.  
+#To visualise the classifier, we restrict ourselves to two dimensions. Based on the two features inputted, we construct a plot showing 
+# the test data as well as the the decision boundary of our model.  
 
 
 def plot_model(feature1,feature2):
@@ -124,7 +138,7 @@ def plot_model(feature1,feature2):
 	mu, c = gaussians(feature_lst)
 	E = np.identity(2)
 	
-#Here we calculate the range for our plot axes. 
+# Here we calculate the range for our plot axes. 
 
 	std = ['x']*2
 	for i in range(0,2):		
@@ -135,7 +149,7 @@ def plot_model(feature1,feature2):
 	x = np.linspace(E[0][0]-std[0],E[0][1]+std[0],1000)
 	y = np.linspace(E[1][0]-std[1],E[1][1]+std[1],1000)
 
-#Here we plot the decision boundary between the labels. 
+# Here we plot the decision boundary between the labels. 
 
 	X,Y = np.meshgrid(x,y)
 	mesh = np.dstack((X,Y))
