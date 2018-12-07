@@ -1,4 +1,4 @@
-# In this project, try to visualise Lloyd's algorithm when applied to 'Fischer's Iris Data Set'. The data consists of samples
+# In this project, we visualise Lloyd's algorithm when applied to 'Fischer's Iris Data Set'. The data consists of samples
 # of 50 plants from from three different species of Iris (Iris setosa, Iris virginica, Iris versicolor); for each plant, the 
 # sepal length, sepal width, petal length and petal width is given. 
 
