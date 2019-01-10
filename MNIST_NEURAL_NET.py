@@ -86,7 +86,8 @@ def ff(W,V,X,Y,m):
 
 # Back Propagation. 
 # Inputs: as above. 
-# Outputs: "LW" is a list of matrices representing the derivative of L with respect to each of the weight matrices; "LV" is a matrix 		  representing the derivative of L with respect to the weight matrix "V". 
+# Outputs: "LW" is a list of matrices representing the derivative of L with respect to each of the weight matrices; 
+# "LV" is a matrix representing the derivative of L with respect to the weight matrix "V". 
 
 
 def bp(W,V,Y,H,P,m):
