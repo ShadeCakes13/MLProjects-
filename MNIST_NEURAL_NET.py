@@ -16,8 +16,14 @@ x = mnist.data/255.0
 # This programme will generate and train fully connected MNIST neural networks with specified shapes. 
 
 # We initialise the neural network.
-#Inputs: "layers" is a list defining the shape of the neural networks (since we're dealing with MNIST data, the first entry will be 784 and 		the last will be 10, so that "layers = [784,100,100,10]" corresponds to a neural network with two hidden layers of 100 nodes); "n" is 		the number of images to include in our training data; "p" is the number of images to include in our test data; "w" sets the maximum 		value of entries in all but the final of our initial weight matrices; "v" does the same but for our final intial weight matrix. 
-#Outputs: "W" is a list consisting of the initial weight matrix between all but the final two layers; "V" is the initial weight matrix between 		the final two layers; "X" is a matrix of training images; "Y" is a matrix of training labels; "XT" is a matrix of test images; "YT" is 		a matrix of test labels; "m" is the number of layers in the neural net. 
+#Inputs: "layers" is a list defining the shape of the neural networks (since we're dealing with MNIST data, the first entry will be 784 and
+# 	the last will be 10, so that "layers = [784,100,100,10]" corresponds to a neural network with two hidden layers of 100 nodes); 
+# 	"n" is the number of images to include in our training data; "p" is the number of images to include in our test data; "w" sets 
+# 	the maximum value of entries in all but the final of our initial weight matrices; "v" does the same but for our final intial 
+# 	weight matrix. 
+#Outputs: "W" is a list consisting of the initial weight matrix between all but the final two layers; "V" is the initial weight
+#	matrix between the final two layers; "X" is a matrix of training images; "Y" is a matrix of training labels; "XT" is a matrix of 
+# 	test images; "YT" is a matrix of test labels; "m" is the number of layers in the neural net. 
 
 def init(layers,n,p,w,v):
 	m = len(layers) 
@@ -61,7 +67,9 @@ s = np.vectorize(s)
 
 #Feed forwards. 
 #Inputs: as described above. 
-#Outputs: "H" is a list of matrices, each matrix representing the value at a particular layer when particular data is inputted into our neural 		network; P is a matrix representing the digit probabilities associated with each instance of our inputted data; L represents the loss 		that the inputted data incurs in our neural network.
+#Outputs: "H" is a list of matrices, each matrix representing the value at a particular layer when particular data is inputted 
+#	  into our neural network; P is a matrix representing the digit probabilities associated with each instance of our inputted 
+# 	  data; L represents the loss that the inputted data incurs in our neural network.
 
 def ff(W,V,X,Y,m):
 	n = np.shape(X)[0]
@@ -105,7 +113,8 @@ def bp(W,V,Y,H,P,m):
 		LW[m-2-i] = np.matmul(np.transpose(H[m-2-i]),G)
 	return LW, LV
 
-# Variation on our feed forwards function: when evaluating the effectiveness of our neural network, we're just interest in the final calculation of "P" in the function "ff". (Inputs as above)
+# Variation on our feed forwards function: when evaluating the effectiveness of our neural network, we're just interest in 
+# the final calculation of "P" in the function "ff". (Inputs as above)
 
 def gff(W,V,X,m):
 	n = np.shape(X)[0]
@@ -132,7 +141,11 @@ def rate(W,V,XT,YT,m):
 			count += 1 
 	return 100.0*count/p
 
-# We run the following to see our neural network being trained in real time. At each iteration, we print the iteration number and the loss per training image (so that we can compare this ratio to that of an untrained neural network, for which we'd expect this value to be ~0.9). Every tenth iteration, we print the percentage error of our current model on the test data. We output the best performing weights when we encounter some degree of convergence (either no appreciable change in the loss or the percentage error is persistently not decreasing). 
+# We run the following to see our neural network being trained in real time. At each iteration, we print the iteration number 
+# and the loss per training image (so that we can compare this ratio to that of an untrained neural network, for which we'd 
+# expect this value to be ~0.9). Every tenth iteration, we print the percentage error of our current model on the test data. 
+# We output the best performing weights when we encounter some degree of convergence (either no appreciable change in the loss 
+# or the percentage error is persistently not decreasing). 
 
 def train1(layers,n,p,w,v):
 	
@@ -196,7 +209,9 @@ def train1(layers,n,p,w,v):
 
 	return output_W, output_V
 
-# Though it has the advantage of making relatively the iterative process going on in our training, calling lots of external functions in "train1" leads to many redundant and expensive calculations. As such, we create the less clear, but more computationally efficient, "function2":
+# Though it has the advantage of making relatively the iterative process going on in our training, calling lots of external 
+# functions in "train1" leads to many redundant and expensive calculations. As such, we create the less clear, but more 
+# computationally efficient, "train2".
 
 
 def train2(layers, n, p, w, v): 
@@ -312,11 +327,21 @@ def train2(layers, n, p, w, v):
 	
 	return output_W, output_V
 
-# For example, if we run the "train2([784, 100, 10],20000,500,0.0001,0.0000001)", after ~8hrs the function terminates yielding the following:  
+# For example, if we run the "train2([784, 100, 10],20000,500,0.0001,0.0000001)", after ~8hrs the function terminates yields:  
 #"Error rate on test data = 3.4%
 #Loss/n = 0.018052078097475083     2871"
 
 # A note on use:
-# Since we're dealing with large matrices and exponential functions, the programme has a habit of breaking down in early iterations due to overflow. It's for this reason that we've introduced the coefficients "w" and "v" to control the size of the values in the initial matrices and so prevent overflow; as the exponential function is only used in the final layer, the value of "v" is especially important in this regard. Of course, the values of these coefficients will also affect the behaviour of the algorithm more generally, and suitable values for fast convergence are found by trial and error and depend on the shape of the neural network and the number of images in the training data. 
-#	It's also worth explaining the convergence criteria of the algorthm. The algorithm can terminate for one of two reasons. The first is that after even after decreasing our iterative step-size by a specfied factor, there is no decrease in the loss (in above, the factor is 10**"200" - this is not really a sensible number, since it's much greater than machine precision). This corresponds to having arrived at a stationary point of the loss function. The second is that the lowest recorded error rate hasn't decreased in a specified number of iterations (in the above, that's 400 * 10 = 4000 iterations). These numbers are quite arbitrary and should be changed freely.  			
+# Since we're dealing with large matrices and exponential functions, the programme has a habit of breaking down in early iterations
+# due to overflow. It's for this reason that we've introduced the coefficients "w" and "v" to control the size of the values in the
+# initial matrices and so prevent overflow; as the exponential function is only used in the final layer, the value of "v" is 
+# especially important in this regard. Of course, the values of these coefficients will also affect the behaviour of the algorithm 
+# more generally, and suitable values for fast convergence are found by trial and error and depend on the shape of the neural 
+# network and the number of images in the training data. 
+#	It's also worth explaining the convergence criteria of the algorthm. The algorithm can terminate for one of two reasons.
+# The first is that after even after decreasing our iterative step-size by a specfied factor, there is no decrease in the loss 
+# (in above, the factor is 10**"200" - this is not really a sensible number, since it's much greater than machine precision). 
+# This corresponds to having arrived at a stationary point of the loss function. The second is that the lowest recorded error 
+# rate hasn't decreased in a specified number of iterations (in the above, that's 400 * 10 = 4000 iterations). These numbers are
+# quite arbitrary and should be changed freely.  			
 	
