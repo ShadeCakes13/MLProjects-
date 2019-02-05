@@ -278,10 +278,11 @@ def train2(layers, n, p, w, v):
 				fail1 += 1
 			print("Error rate on test data = " + str(R2) +"%")
 		while L2>=L1:
-			WW = [W[i] - (0.1**(thing-thang))*LW[i] for i in range(0,m-2)]
-			VV = V - (0.1**(thing-thang))*LV
+			WW = ['x']*(m-2)
 			for i in range(1,m-1):
+				WW[i-1] = W[i-1] - (0.1**(thing-thang))*LW[i-1]
 				H[i] = t(np.matmul(H[i-1],WW[i-1]))
+			VV = V - (0.1**(thing-thang))*LV
 			G = s(np.matmul(H[m-2],VV))	
 			sums = np.array([1./np.sum(G[i,:]) for i in range(0,n)])
 			P = np.matmul(np.diag(sums),G)
